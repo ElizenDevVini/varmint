@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>varmint city</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #1a1d21; color: #e6e3da; font: 13px/1.5 ui-monospace, Menlo, monospace; }
+  #city { display: block; touch-action: none; cursor: grab; }
+  .overlay { position: fixed; background: rgba(20,22,26,0.88); border: 1px solid #33363c; padding: 10px 12px; }
+  #feed { left: 12px; top: 12px; width: 300px; max-height: 40vh; overflow: hidden; }
+  #feed div { padding: 1px 0; color: #b9b4a7; }
+  #feed div:last-child { color: #e6e3da; }
+  #panel { right: 12px; bottom: 12px; width: 260px; }
+  #card { left: 12px; bottom: 12px; }
+  #title { right: 12px; top: 12px; color: #b9b4a7; }
+  .pick { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+  button { background: #24272c; color: #e6e3da; border: 1px solid #3a3e45; padding: 6px 8px; font: inherit; cursor: pointer; }
+  button:hover { border-color: #6a6f78; }
+  .sp.on { border-color: #ffd97a; color: #ffd97a; }
+  .sp img { width: 40px; height: 40px; display: block; margin: 0 auto 4px; image-rendering: pixelated; }
+  input { width: 100%; box-sizing: border-box; background: #16181c; color: #e6e3da; border: 1px solid #3a3e45; padding: 6px 8px; font: inherit; margin-bottom: 8px; }
+  #btn-create { width: 100%; }
+  #panel-err { color: #d98a7a; margin-top: 6px; min-height: 1em; }
+</style>
+</head>
+<body>
+<canvas id="city"></canvas>
+<div id="title" class="overlay">varmint city — a shared terrarium. drag to pan, scroll to zoom.</div>
+<div id="feed" class="overlay"></div>
+<div id="card" class="overlay" hidden></div>
+<div id="panel" class="overlay"></div>
+<script src="sim.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
