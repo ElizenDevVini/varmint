@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: varmint
+    runtime: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: node server.js
+    disk:
+      name: varmint-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: SQLITE_PATH
+        value: /data/varmint.db
+      - key: IP_SALT
+        generateValue: true

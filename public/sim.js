@@ -100,9 +100,9 @@
       const perch = pick(Z.perches, h32(seed, 0, 5));
       const stash = pick(Z.perches, h32(seed, 0, 6) + 1);
       if (isNight) return { ...tileCenter(perch), act: 'sleep' };
-      const r = h32(seed, s, 7) % 4;
+      const r = h32(seed, s, 7) % 8;
       if (r === 0) return { ...tileCenter(stash), act: 'action', stash: true };
-      if (r === 1) return { ...tileCenter(perch), act: 'walk' };
+      if (r <= 2) return { ...tileCenter(perch), act: 'walk' };
       return { ...spotIn(pick(Z.plaza, h32(seed, s, 8)), seed, s), act: 'walk' };
     }
     if (species === 'cat') {
@@ -153,7 +153,7 @@
   function agentState(agent, t, roster) {
     const s = Math.floor(t / SEG);
     if (agent.species === 'dog' && !night(s * SEG)) {
-      const span = Math.floor(s / 4);
+      const span = Math.floor(s / 8);
       const others = roster.filter((a) => a.species !== 'dog' && a.id !== agent.id);
       if (others.length) {
         const target = pick(others, h32(agent.seed, span, 19));
@@ -196,11 +196,15 @@
           const cur = basePoint(a, s), prev = basePoint(a, s - 1);
           if (cur.stash && !prev.stash) out.push({ t, text: `${a.name} the crow stashed something shiny` });
         }
-        if (a.species === 'dog' && !night(t) && s % 4 === 0) {
+        if (a.species === 'dog' && !night(t) && s % 8 === 0) {
           const others = roster.filter((o) => o.species !== 'dog' && o.id !== a.id);
           if (others.length) {
-            const tgt = pick(others, h32(a.seed, Math.floor(s / 4), 19));
-            out.push({ t, text: `${a.name} the dog started tailing ${tgt.name} the ${tgt.species}` });
+            const span = Math.floor(s / 8);
+            const tgt = pick(others, h32(a.seed, span, 19));
+            const prev = pick(others, h32(a.seed, span - 1, 19));
+            if (tgt.id !== prev.id) {
+              out.push({ t, text: `${a.name} the dog started tailing ${tgt.name} the ${tgt.species}` });
+            }
           }
         }
         if (a.species === 'cat') {
