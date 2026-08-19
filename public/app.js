@@ -155,7 +155,10 @@
       for (let tx = x0; tx <= x1; tx++) {
         const type = MAP.tiles[ty * MAP.W + tx];
         const p = worldToScreen(tx * SUB, ty * SUB);
-        if (tilesImg) ctx.drawImage(tilesImg, type * 32, 0, 32, 32, p.x, p.y, px + 1, px + 1);
+        if (tilesImg) {
+          const ts = tilesImg.height;
+          ctx.drawImage(tilesImg, type * ts, 0, ts, ts, p.x, p.y, px + 1, px + 1);
+        }
         else {
           ctx.fillStyle = TILE_COLORS[type];
           ctx.fillRect(p.x, p.y, px + 1, px + 1);
