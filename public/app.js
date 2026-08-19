@@ -42,7 +42,7 @@
     img.onload = () => (tilesImg = img);
   }
   const TILE_ORDER = ['grass', 'road', 'walk', 'plaza', 'roof', 'stall'];
-  const TILE_COLORS = ['#4e6b45', '#585a5e', '#8d8b83', '#a89a84', '#6e5f6b', '#b06a4a'];
+  const TILE_COLORS = ['#6e7076', '#585a5e', '#8d8b83', '#a89a84', '#6e5f6b', '#b06a4a', '#4e6b45'];
   const SPECIES_COLORS = { fly: '#9fd54a', crow: '#7a86c9', cat: '#d99a4e', dog: '#c9c0ae' };
 
   // --- SSE ---
@@ -58,7 +58,7 @@
     es.addEventListener('agent', (e) => {
       const a = JSON.parse(e.data);
       if (!roster.some((r) => r.id === a.id)) roster.push(a);
-      pushFeedLine(`${a.name} the ${a.species} arrived in the city`);
+      pushFeedLine(`${a.name} (${a.species} brain) arrived in the city`);
     });
     es.addEventListener('time', (e) => {
       clockOffset = Number(e.data) - Date.now();
@@ -186,7 +186,7 @@
     states.sort((p, q) => p.st.y - q.st.y);
     for (const { a, st } of states) {
       const p = worldToScreen(st.x, st.y);
-      const size = px * (a.species === 'fly' ? 0.5 : 0.9);
+      const size = px * 0.9;
       const img = sprites[a.species];
       if (img) {
         const fw = img.height; // square frames in a horizontal strip
@@ -267,7 +267,7 @@
     const doing = st.act === 'sleep' ? 'asleep'
       : st.act === 'action' ? (selected.species === 'cat' ? 'pouncing' : 'stashing loot')
       : st.following ? `tailing ${st.following.name}` : 'wandering';
-    cardEl.innerHTML = `<b>${esc(selected.name)}</b> — ${selected.species}<br>${doing}` +
+    cardEl.innerHTML = `<b>${esc(selected.name)}</b> — ${selected.species} brain<br>${doing}` +
       `<br><button id="card-follow">watch</button> <button id="card-close">close</button>`;
     document.getElementById('card-close').onclick = () => { selected = null; updateCard(); };
     document.getElementById('card-follow').onclick = () => {
@@ -287,7 +287,7 @@
   let pickedSpecies = null;
   function updatePanel() {
     if (mine) {
-      panel.innerHTML = `<b>${esc(mine.agent.name)}</b> — your ${mine.agent.species}` +
+      panel.innerHTML = `<b>${esc(mine.agent.name)}</b> — your ${mine.agent.species} brain` +
         ` <button id="btn-follow">${follow ? 'stop watching' : 'watch'}</button>`;
       document.getElementById('btn-follow').onclick = () => { follow = !follow; updatePanel(); };
       return;
@@ -295,7 +295,7 @@
     panel.innerHTML = `<div class="pick">` +
       ['fly', 'crow', 'cat', 'dog'].map((sp) =>
         `<button class="sp${pickedSpecies === sp ? ' on' : ''}" data-sp="${sp}">` +
-        `<img src="assets/portrait_${sp}.png" onerror="this.style.display='none'" alt="">${sp}</button>`
+        `<img src="assets/portrait_${sp}.png" onerror="this.style.display='none'" alt="">${sp} brain</button>`
       ).join('') + `</div>` +
       `<input id="agent-name" maxlength="20" placeholder="name your varmint">` +
       `<button id="btn-create">release into the city</button><div id="panel-err"></div>`;

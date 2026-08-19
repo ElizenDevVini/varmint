@@ -18,27 +18,27 @@
   const pick = (arr, n) => arr[n % arr.length];
 
   // --- map: fixed, derived from constants only ---
-  // tile types
-  const T = { GRASS: 0, ROAD: 1, WALK: 2, PLAZA: 3, ROOF: 4, STALL: 5 };
+  // tile types (indices match the tiles.png strip)
+  const T = { PAVE: 0, ROAD: 1, WALK: 2, PLAZA: 3, ROOF: 4, STALL: 5, LAWN: 6 };
   function buildMap() {
     const tiles = new Uint8Array(W * H);
     const isRoad = (x, y) => x % 16 === 8 || y % 16 === 8;
     for (let y = 0; y < H; y++)
-      for (let x = 0; x < W; x++) tiles[y * W + x] = isRoad(x, y) ? T.ROAD : T.GRASS;
+      for (let x = 0; x < W; x++) tiles[y * W + x] = isRoad(x, y) ? T.ROAD : T.PAVE;
 
     // plaza: center square
     for (let y = 26; y < 38; y++)
       for (let x = 26; x < 38; x++) tiles[y * W + x] = T.PLAZA;
 
-    // buildings: inset rects inside each 16x16 block, some blocks stay parks
+    // blocks: buildings inset inside each 16x16 block, some blocks are parks
     for (let by = 0; by < 4; by++)
       for (let bx = 0; bx < 4; bx++) {
-        if (h32(bx, by, 11) % 4 === 0) continue; // park block
+        const park = h32(bx, by, 11) % 4 === 0;
         const x0 = bx * 16 + 10, y0 = by * 16 + 10; // between roads at 8s
         for (let y = y0 + 1; y < y0 + 13 && y < H; y++)
           for (let x = x0 + 1; x < x0 + 13 && x < W; x++) {
             const i = y * W + x;
-            if (tiles[i] === T.GRASS) tiles[i] = T.ROOF;
+            if (tiles[i] === T.PAVE) tiles[i] = park ? T.LAWN : T.ROOF;
           }
       }
     // carve plaza back out and give it a sidewalk ring
@@ -194,7 +194,7 @@
       for (const a of roster) {
         if (a.species === 'crow') {
           const cur = basePoint(a, s), prev = basePoint(a, s - 1);
-          if (cur.stash && !prev.stash) out.push({ t, text: `${a.name} the crow stashed something shiny` });
+          if (cur.stash && !prev.stash) out.push({ t, text: `${a.name} (crow brain) stashed something shiny` });
         }
         if (a.species === 'dog' && !night(t) && s % 8 === 0) {
           const others = roster.filter((o) => o.species !== 'dog' && o.id !== a.id);
@@ -203,7 +203,7 @@
             const tgt = pick(others, h32(a.seed, span, 19));
             const prev = pick(others, h32(a.seed, span - 1, 19));
             if (tgt.id !== prev.id) {
-              out.push({ t, text: `${a.name} the dog started tailing ${tgt.name} the ${tgt.species}` });
+              out.push({ t, text: `${a.name} (dog brain) started tailing ${tgt.name}` });
             }
           }
         }
@@ -214,7 +214,7 @@
               if (f.species !== 'fly') continue;
               const fp = basePos(f, t);
               if (Math.abs(fp.x - p.x) + Math.abs(fp.y - p.y) < 2 * SUB) {
-                out.push({ t, text: `${a.name} the cat pounced at ${f.name} the fly` });
+                out.push({ t, text: `${a.name} (cat brain) pounced at ${f.name}` });
                 break;
               }
             }
